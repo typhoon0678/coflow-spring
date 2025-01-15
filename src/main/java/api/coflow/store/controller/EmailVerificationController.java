@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import api.coflow.store.dto.emailVerification.EmailVerificationRequestDTO;
-import api.coflow.store.dto.member.SignupRequestDTO;
+import api.coflow.store.dto.emailVerification.SignupRequestDTO;
 import api.coflow.store.service.EmailVerificationService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
@@ -29,7 +28,7 @@ public class EmailVerificationController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("")
+    @PostMapping("/code")
     public ResponseEntity<?> checkCode(@RequestBody EmailVerificationRequestDTO emailVerificationRequestDTO) {
         emailVerificationService.checkCode(emailVerificationRequestDTO);
 
@@ -41,10 +40,5 @@ public class EmailVerificationController {
         emailVerificationService.verifyAndSignup(signupRequestDTO);
 
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/test")
-    public String getMethodName() {
-        return "test";
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import api.coflow.store.common.enums.Role;
 import api.coflow.store.common.exception.CustomException;
 import api.coflow.store.dto.emailVerification.EmailVerificationRequestDTO;
-import api.coflow.store.dto.member.SignupRequestDTO;
+import api.coflow.store.dto.emailVerification.SignupRequestDTO;
 import api.coflow.store.entity.EmailVerification;
 import api.coflow.store.entity.Member;
 import api.coflow.store.repository.EmailVerificationRepository;
@@ -51,12 +51,12 @@ public class EmailVerificationService {
                 .code(code)
                 .build();
 
-        sendMail(email, code);
+        createAndSendMail(email, code);
 
         emailVerificationRepository.save(emailVerification);
     }
 
-    private void sendMail(String email, String code) {
+    private void createAndSendMail(String email, String code) {
         MimeMessage message = javaMailSender.createMimeMessage();
 
         try {

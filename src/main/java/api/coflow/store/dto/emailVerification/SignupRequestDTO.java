@@ -1,4 +1,4 @@
-package api.coflow.store.dto.member;
+package api.coflow.store.dto.emailVerification;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -16,6 +16,5 @@ public class SignupRequestDTO {
     private String password;
 
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9]{6}$", message = "인증 코드 형식이 맞지 않습니다.")
     private String code;
 }

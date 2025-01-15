@@ -2,7 +2,7 @@ package api.coflow.store.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import api.coflow.store.dto.member.SignupRequestDTO;
+import api.coflow.store.dto.member.LoginRequestDTO;
 import api.coflow.store.service.MemberService;
 import lombok.RequiredArgsConstructor;
 
@@ -18,4 +18,10 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        memberService.login(loginRequestDTO);
+
+        return ResponseEntity.ok().build();
+    }
 }
