@@ -4,7 +4,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import api.coflow.store.common.exception.CustomException;
-import api.coflow.store.dto.member.LoginRequestDTO;
+import api.coflow.store.dto.member.UsernameRequestDTO;
+import api.coflow.store.dto.refresh.LoginRequestDTO;
 import api.coflow.store.entity.Member;
 import api.coflow.store.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,9 @@ public class MemberService {
         }
 
         return member;
+    }
+
+    public void username(UsernameRequestDTO usernameRequestDTO) {
+        memberRepository.updateUsername(usernameRequestDTO.getUsername(), usernameRequestDTO.getEmail());
     }
 }

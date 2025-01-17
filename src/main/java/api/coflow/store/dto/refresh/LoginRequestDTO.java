@@ -1,4 +1,4 @@
-package api.coflow.store.dto.member;
+package api.coflow.store.dto.refresh;
 
 import lombok.Data;
 

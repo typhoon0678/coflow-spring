@@ -1,7 +1,8 @@
-package api.coflow.store.dto.member;
+package api.coflow.store.dto.refresh;
 
 import java.util.Set;
 
+import jakarta.servlet.http.Cookie;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,9 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberInfoResponseDTO {
+public class TokenDTO {
     
-    private int status;
     private String email;
     private Set<String> roles;
+    private String accessToken;
+    private Cookie refreshTokenCookie;
 }

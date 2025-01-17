@@ -35,10 +35,13 @@ public class JWTUtil implements InitializingBean {
     private String key;
 
     @Value("${jwt.accessSeconds}")
-    private long accessSeconds;
+    private int accessSeconds;
 
     @Value("${jwt.refreshSeconds}")
-    private long refreshSeconds;
+    private int refreshSeconds;
+
+    @Value("${jwt.renewSeconds}")
+    private int renewSeconds;
 
     @Value("${jwt.domain}")
     private String domain;
@@ -88,18 +91,10 @@ public class JWTUtil implements InitializingBean {
     public ResponseCookie generateRefreshCookie(Member member) {
         String jwt = generateRefreshToken(member);
 
-        return generateCookie(jwt, "refreshToken");
+        return generateCookie(jwt, "refreshToken", refreshSeconds);
     }
 
-    private ResponseCookie generateCookie(String jwt, String type) {
-        int maxAge;
-        if (type.equals("accessToken")) {
-            maxAge = (int) accessSeconds;
-        } else if (type.equals("refreshToken")) {
-            maxAge = (int) refreshSeconds;
-        } else {
-            maxAge = 0;
-        }
+    private ResponseCookie generateCookie(String jwt, String type, int maxAge) {
 
         return ResponseCookie.from(type)
                 .value(jwt)
@@ -109,17 +104,6 @@ public class JWTUtil implements InitializingBean {
                 // .secure(true)
                 .maxAge(maxAge)
                 .build();
-    }
-
-    // 토큰 검증
-    public boolean validateToken(String jwt) {
-        try {
-            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(jwt);
-            return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | ExpiredJwtException e) {
-        }
-
-        return false;
     }
 
     public Cookie generateRefreshServletCookie(Member member) {
@@ -135,6 +119,34 @@ public class JWTUtil implements InitializingBean {
         cookie.setHttpOnly(responseCookie.isHttpOnly());
         cookie.setSecure(responseCookie.isSecure());
         return cookie;
+    }
+
+    public Cookie generateLogoutCookie() {
+        return toServletCookie(generateCookie("", "refreshToken", 0));
+    }
+
+    // 토큰 검증
+    public boolean validateToken(String jwt) {
+        try {
+            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(jwt);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | ExpiredJwtException e) {
+        }
+
+        return false;
+    }
+
+    // 남은 유효기간이 renewSeconds 이내인지 확인
+    public boolean shouldRenewRefresh(String jwt) {
+        Date expirationDate = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(jwt)
+                .getPayload()
+                .getExpiration();
+
+        long remainingTime = expirationDate.getTime() - System.currentTimeMillis();
+        return remainingTime < renewSeconds * 1000;
     }
 
     // jwt -> Authentication
