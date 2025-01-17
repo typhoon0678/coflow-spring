@@ -89,6 +89,8 @@ public class EmailVerificationService {
         if (emailVerification.getCreatedAt().plusMinutes(10).isBefore(LocalDateTime.now())) {
             throw new CustomException("SIGNUP_CODE_EXPIRED");
         }
+
+        emailVerificationRepository.updateVerifiedTrue(email);
     }
 
     @Transactional
@@ -98,6 +100,14 @@ public class EmailVerificationService {
 
         EmailVerification emailVerification = emailVerificationRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException("SIGNUP_CODE_NOT_EXISTS"));
+
+        if (!emailVerification.isVerified()) {
+            throw new CustomException("SIGNUP_CODE_NOT_VERIFIED");
+        }
+
+        if (!emailVerification.getCreatedAt().plusMinutes(20).isAfter(LocalDateTime.now())) {
+            throw new CustomException("SIGNUP_CODE_EXPIRED");
+        }
 
         if (!emailVerification.getCode().equals(code)) {
             throw new CustomException("SIGNUP_CODE_NOT_MATCHED");

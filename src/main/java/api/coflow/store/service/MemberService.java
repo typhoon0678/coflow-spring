@@ -16,12 +16,14 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
-    public void login(LoginRequestDTO loginRequestDTO) {
+    public Member login(LoginRequestDTO loginRequestDTO) {
         Member member = memberRepository.findByEmail(loginRequestDTO.getEmail())
-                .orElseThrow(() -> new CustomException("LOGIN_EMAIL_NOT_EXISTS"));
+                .orElseThrow(() -> new CustomException("LOGIN_FAILED"));
 
         if (!passwordEncoder.matches(loginRequestDTO.getPassword(), member.getPassword())) {
-            throw new CustomException("LOGIN_PASSWORD_NOT_MATCHED");
+            throw new CustomException("LOGIN_FAILED");
         }
+
+        return member;
     }
 }

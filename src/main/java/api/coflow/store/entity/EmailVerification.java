@@ -36,6 +36,9 @@ public class EmailVerification {
     @Column(nullable = false)
     private String code;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean verified = false;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
