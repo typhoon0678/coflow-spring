@@ -35,7 +35,7 @@ public class ChatMessageController {
 
     // /pub/message로 요청
     @MessageMapping("/message")
-    public ResponseEntity<Void> receiveMessage(@RequestBody ChatMessageDTO chat) {
+    public ResponseEntity<?> receiveMessage(@RequestBody ChatMessageDTO chat) {
         chatMessageService.save(chat);
 
         template.convertAndSend("/sub/channel/" + chat.getChatChannelId(), chat);
