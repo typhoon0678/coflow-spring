@@ -13,8 +13,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,21 +24,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatRoom {
+public class ChatChannel {
     
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)
-    private String roomName;
-
-    @Column(nullable = false, columnDefinition = "boolean default true")
-    private boolean isPublic = true;
-
-    @ManyToOne
-    @JoinColumn(name = "chat_channel_id", nullable = false)
-    private ChatChannel chatChannel;
+    private String channelName;
 
     @CreatedDate
     private LocalDateTime createdAt;

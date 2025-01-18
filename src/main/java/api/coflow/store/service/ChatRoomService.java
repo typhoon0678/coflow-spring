@@ -1,6 +1,7 @@
 package api.coflow.store.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -9,10 +10,10 @@ import api.coflow.store.common.util.SecurityUtil;
 import api.coflow.store.dto.chat.ChatRoomRequestDTO;
 import api.coflow.store.dto.chat.ChatRoomResponseDTO;
 import api.coflow.store.dto.member.MemberInfoDTO;
-import api.coflow.store.entity.ChatMember;
 import api.coflow.store.entity.ChatRoom;
+import api.coflow.store.entity.ChatRoomMember;
 import api.coflow.store.entity.Member;
-import api.coflow.store.repository.ChatMemberRepository;
+import api.coflow.store.repository.ChatRoomMemberRepository;
 import api.coflow.store.repository.ChatRoomRepository;
 import api.coflow.store.repository.MemberRepository;
 import jakarta.transaction.Transactional;
@@ -23,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatMemberRepository chatMemberRepository;
+    private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final MemberRepository memberRepository;
 
     @Transactional
@@ -37,23 +38,25 @@ public class ChatRoomService {
         String email = SecurityUtil.getAuthenticationMemberInfo().getEmail();
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(""));
-        ChatMember chatMember = ChatMember.builder()
+        ChatRoomMember chatRoomMember = ChatRoomMember.builder()
                 .chatRoom(chatRoom)
                 .member(member)
                 .build();
 
-        chatMemberRepository.save(chatMember);
+        chatRoomMemberRepository.save(chatRoomMember);
     }
 
-    public List<ChatRoomResponseDTO> getChatRoomList() {
+    public List<ChatRoomResponseDTO> getChatRoomList(UUID channelId) {
         MemberInfoDTO memberInfoDTO = SecurityUtil.getAuthenticationMemberInfo();
 
         Member member = memberRepository.findByEmail(memberInfoDTO.getEmail())
                 .orElseThrow(() -> new CustomException("MEMBER_EMAIL_NOT_FOUND"));
 
-        List<ChatMember> chatMemberList = chatMemberRepository.findAllByMember(member);
-
-        List<ChatRoomResponseDTO> chatRoomResponseDTOList = chatMemberList.stream()
+        List<ChatRoomMember> chatMemberList = chatRoomMemberRepository.findAllByMember(member);
+        List<ChatRoomMember> filteredChatMemberList = chatMemberList.stream()
+                .filter((chatMember) -> chatMember.getChatRoom().getChatChannel().getId().equals(channelId))
+                .toList();
+        List<ChatRoomResponseDTO> chatRoomResponseDTOList = filteredChatMemberList.stream()
                 .map((chatRoom) -> new ChatRoomResponseDTO(chatRoom))
                 .toList();
 

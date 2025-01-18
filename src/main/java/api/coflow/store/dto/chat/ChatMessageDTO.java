@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import api.coflow.store.entity.ChatMessage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +17,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ChatMessageDTO {
     
+    private UUID id;
+    private UUID chatChannelId;
     private UUID chatRoomId;
     private String email;
     private String username;
@@ -23,4 +26,14 @@ public class ChatMessageDTO {
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private LocalDateTime createdAt;
+
+    public ChatMessageDTO(ChatMessage chatMessage) {
+        this.id = chatMessage.getId();
+        this.chatChannelId = chatMessage.getChatRoom().getChatChannel().getId();
+        this.chatRoomId = chatMessage.getChatRoom().getId();
+        this.email = chatMessage.getEmail();
+        this.username = chatMessage.getUsername();
+        this.message = chatMessage.getMessage();
+        this.createdAt = chatMessage.getCreatedAt();
+    }
 }

@@ -25,18 +25,18 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMember {
+public class ChatChannelMember {
     
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "chatRoomId", nullable = false)
-    private ChatRoom chatRoom;
+    @JoinColumn(name = "chat_channel_id", nullable = false)
+    private ChatChannel chatChannel;
 
     @ManyToOne
-    @JoinColumn(name = "memberId", nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @CreatedDate
