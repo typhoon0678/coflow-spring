@@ -1,5 +1,6 @@
 package api.coflow.store.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,14 +40,15 @@ public class ChatMessageService {
                 .map((chatRoom) -> ChatRoomMessageResponseDTO.builder()
                         .chatRoomId(chatRoom.getId())
                         .roomName(chatRoom.getRoomName())
-                        .messages(chatMessageRepository.findAllByChatRoomId(chatRoom.getId(), pageable)
+                        .messages(chatMessageRepository.findAllByChatRoomIdAndCreatedAtLessThan(chatRoom.getId(), LocalDateTime.now(), pageable)
                                 .map(ChatMessageDTO::new))
                         .build())
                 .toList();
     }
 
-    public Page<ChatMessageDTO> getRoomMessages(UUID chatRoomId, Pageable pageable) {
-        Page<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomId(chatRoomId, pageable);
+    public Page<ChatMessageDTO> getRoomMessages(UUID chatRoomId, String isoString, Pageable pageable) {
+        LocalDateTime createdAt = LocalDateTime.parse(isoString);
+        Page<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomIdAndCreatedAtLessThan(chatRoomId, createdAt, pageable);
         return chatMessages.map(ChatMessageDTO::new);
     }
 

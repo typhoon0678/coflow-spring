@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("/api/chat/message")
 @RequiredArgsConstructor
@@ -32,18 +31,23 @@ public class ChatMessageController {
     private final ChatMessageService chatMessageService;
 
     @GetMapping("/channel/{chatChannelId}")
-    public ResponseEntity<?> getChannelMessages(@PathVariable UUID chatChannelId, @RequestParam int size) {
+    public ResponseEntity<?> getChannelMessages(
+            @PathVariable UUID chatChannelId,
+            @RequestParam int size) {
         Pageable pageable = PageRequest.of(0, size, Sort.by("createdAt", "id").descending());
         List<ChatRoomMessageResponseDTO> messages = chatMessageService.getChannelMessages(chatChannelId, pageable);
-        
+
         return ResponseEntity.ok().body(messages);
     }
-    
 
     @GetMapping("/room/{chatRoomId}")
-    public ResponseEntity<?> getRoomMessages(@PathVariable UUID chatRoomId, @RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<?> getRoomMessages(
+            @PathVariable UUID chatRoomId,
+            @RequestParam String isoString,
+            @RequestParam int page,
+            @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt", "id").descending());
-        Page<ChatMessageDTO> messages = chatMessageService.getRoomMessages(chatRoomId, pageable);
+        Page<ChatMessageDTO> messages = chatMessageService.getRoomMessages(chatRoomId, isoString, pageable);
 
         return ResponseEntity.ok().body(messages);
     }

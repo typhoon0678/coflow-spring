@@ -3,8 +3,6 @@ package api.coflow.store.dto.chat;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import api.coflow.store.entity.ChatMessage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,8 +21,6 @@ public class ChatMessageDTO {
     private String email;
     private String username;
     private String message;
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private LocalDateTime createdAt;
 
     public ChatMessageDTO(ChatMessage chatMessage) {

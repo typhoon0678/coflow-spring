@@ -1,5 +1,6 @@
 package api.coflow.store.repository;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -10,5 +11,5 @@ import api.coflow.store.entity.ChatMessage;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, UUID> {
     
-    Page<ChatMessage> findAllByChatRoomId(UUID chatRoomId, Pageable pageable);
+    Page<ChatMessage> findAllByChatRoomIdAndCreatedAtLessThan(UUID chatRoomId, LocalDateTime createdAt, Pageable pageable);
 }
