@@ -3,12 +3,20 @@ package api.coflow.store.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import api.coflow.store.common.exception.CustomException;
+import api.coflow.store.common.util.SecurityUtil;
 import api.coflow.store.dto.chat.ChatMessageDTO;
+import api.coflow.store.dto.chat.ChatRoomMessageResponseDTO;
 import api.coflow.store.entity.ChatMessage;
 import api.coflow.store.entity.ChatRoom;
+import api.coflow.store.entity.Member;
 import api.coflow.store.repository.ChatMessageRepository;
+import api.coflow.store.repository.ChatRoomRepository;
+import api.coflow.store.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -16,16 +24,35 @@ import lombok.RequiredArgsConstructor;
 public class ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final MemberRepository memberRepository;
 
-    public List<ChatMessageDTO> getChatMessages(UUID chatRoomId) {
-        List<ChatMessage> chatMessageList = chatMessageRepository.findAllByChatRoomId(chatRoomId);
-        return chatMessageList.stream()
-                .map((msg) -> new ChatMessageDTO(msg))
+    public List<ChatRoomMessageResponseDTO> getChannelMessages(UUID channelId, Pageable pageable) {
+        String email = SecurityUtil.getAuthenticationMemberInfo().getEmail();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException("MEMBER_EMAIL_NOT_FOUND"));
+
+        List<ChatRoom> chatRoomList = chatRoomRepository
+                .getChatRoomByChatChannelId(channelId, member.getId());
+
+        return chatRoomList.stream()
+                .map((chatRoom) -> ChatRoomMessageResponseDTO.builder()
+                        .chatRoomId(chatRoom.getId())
+                        .roomName(chatRoom.getRoomName())
+                        .messages(chatMessageRepository.findAllByChatRoomId(chatRoom.getId(), pageable)
+                                .map(ChatMessageDTO::new))
+                        .build())
                 .toList();
+    }
+
+    public Page<ChatMessageDTO> getRoomMessages(UUID chatRoomId, Pageable pageable) {
+        Page<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomId(chatRoomId, pageable);
+        return chatMessages.map(ChatMessageDTO::new);
     }
 
     public void save(ChatMessageDTO chatMessageDTO) {
         ChatMessage chatMessage = ChatMessage.builder()
+                .id(chatMessageDTO.getId())
                 .chatRoom(ChatRoom.builder().id(chatMessageDTO.getChatRoomId()).build())
                 .email(chatMessageDTO.getEmail())
                 .username(chatMessageDTO.getUsername())
