@@ -1,6 +1,7 @@
 package api.coflow.store.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,13 @@ public class ChatChannelService {
         return chatChannelMemberList.stream()
                 .map((chatChannelMember) -> new ChatChannelResponseDTO(chatChannelMember.getChatChannel()))
                 .toList();
+    }
+
+    public ChatChannelResponseDTO getChannelInfo(UUID channelId) {
+        ChatChannel chatChannel = chatChannelRepository.findById(channelId)
+                .orElseThrow(() -> new CustomException("CHAT_CHANNEL_NOT_FOUND"));
+
+        return new ChatChannelResponseDTO(chatChannel);
     }
 
     @Transactional

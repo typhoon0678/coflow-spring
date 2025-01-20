@@ -2,7 +2,7 @@ package api.coflow.store.dto.chat;
 
 import java.util.UUID;
 
-import api.coflow.store.entity.ChatRoomMember;
+import api.coflow.store.entity.ChatRoom;
 import api.coflow.store.entity.ChatRoomMember;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,5 +21,10 @@ public class ChatRoomResponseDTO {
     public ChatRoomResponseDTO(ChatRoomMember chatRoomMember) {
         this.id = chatRoomMember.getChatRoom().getId();
         this.roomName = chatRoomMember.getChatRoom().getRoomName();
+    }
+
+    public ChatRoomResponseDTO(ChatRoom chatRoom) {
+        this.id = chatRoom.getId();
+        this.roomName = chatRoom.getRoomName();
     }
 }

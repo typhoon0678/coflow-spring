@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import api.coflow.store.entity.ChatChannel;
 import api.coflow.store.entity.ChatChannelMember;
 import api.coflow.store.entity.Member;
 
@@ -15,4 +16,6 @@ public interface ChatChannelMemberRepository extends JpaRepository<ChatChannelMe
     int isExistsByMember(Member member);
 
     List<ChatChannelMember> findAllByMember(Member member);
+
+    List<ChatChannelMember> findAllByChatChannel(ChatChannel chatChannel);
 }
