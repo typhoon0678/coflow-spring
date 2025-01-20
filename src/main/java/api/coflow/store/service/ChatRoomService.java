@@ -10,7 +10,6 @@ import api.coflow.store.common.util.SecurityUtil;
 import api.coflow.store.dto.chat.ChatRoomRequestDTO;
 import api.coflow.store.dto.chat.ChatRoomResponseDTO;
 import api.coflow.store.entity.ChatChannel;
-import api.coflow.store.entity.ChatChannelMember;
 import api.coflow.store.entity.ChatRoom;
 import api.coflow.store.entity.ChatRoomMember;
 import api.coflow.store.entity.Member;
@@ -46,33 +45,22 @@ public class ChatRoomService {
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
 
-        if (isPublic) {
-            List<ChatChannelMember> chatChannelMemberList = chatChannelMemberRepository.findAllByChatChannel(chatChannel);
-            
-            chatChannelMemberList.stream()
-            .forEach((chatChannelMember) -> {
-                ChatRoomMember chatRoomMember = ChatRoomMember.builder()
-                        .chatRoom(chatRoom)
-                        .member(chatChannelMember.getMember())
-                        .build();
-                chatRoomMemberRepository.save(chatRoomMember);
-            });
-        } else {
+        if (!isPublic) {
             ChatRoomMember chatRoomMember = ChatRoomMember.builder()
-                .chatRoom(chatRoom)
-                .member(member)
-                .build();
+                    .chatRoom(chatRoom)
+                    .member(member)
+                    .build();
             chatRoomMemberRepository.save(chatRoomMember);
 
             chatRoomRequestDTO.getEmailList().stream()
-                .forEach((email) -> {
-                    Member inviteMember = memberRepository.findByEmail(email)
-                        .orElseThrow(() -> new CustomException("MEMBER_EMAIL_NOT_FOUND"));
-                    ChatRoomMember chatRoomInviteMember = ChatRoomMember.builder()
-                        .member(inviteMember)
-                        .build();
-                    chatRoomMemberRepository.save(chatRoomInviteMember);
-                });
+                    .forEach((email) -> {
+                        Member inviteMember = memberRepository.findByEmail(email)
+                                .orElseThrow(() -> new CustomException("MEMBER_EMAIL_NOT_FOUND"));
+                        ChatRoomMember chatRoomInviteMember = ChatRoomMember.builder()
+                                .member(inviteMember)
+                                .build();
+                        chatRoomMemberRepository.save(chatRoomInviteMember);
+                    });
         }
 
         return new ChatRoomResponseDTO(savedChatRoom);

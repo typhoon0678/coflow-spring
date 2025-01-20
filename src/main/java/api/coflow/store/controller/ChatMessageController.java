@@ -3,7 +3,6 @@ package api.coflow.store.controller;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -47,7 +46,7 @@ public class ChatMessageController {
             @RequestParam int page,
             @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt", "id").descending());
-        Page<ChatMessageDTO> messages = chatMessageService.getRoomMessages(chatRoomId, isoString, pageable);
+        ChatRoomMessageResponseDTO messages = chatMessageService.getRoomMessages(chatRoomId, isoString, pageable);
 
         return ResponseEntity.ok().body(messages);
     }

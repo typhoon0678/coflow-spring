@@ -1,6 +1,8 @@
 package api.coflow.store.service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -51,10 +53,16 @@ public class ChatMessageService {
                 .toList();
     }
 
-    public Page<ChatMessageDTO> getRoomMessages(UUID chatRoomId, String isoString, Pageable pageable) {
-        LocalDateTime createdAt = LocalDateTime.parse(isoString);
+    public ChatRoomMessageResponseDTO getRoomMessages(UUID chatRoomId, String isoString, Pageable pageable) {
+        LocalDateTime createdAt = ZonedDateTime.parse(isoString)
+                .withZoneSameInstant(ZoneId.of("Asia/Seoul"))
+                .toLocalDateTime();
         Page<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomIdAndCreatedAtLessThan(chatRoomId, createdAt, pageable);
-        return chatMessages.map(ChatMessageDTO::new);
+
+        return ChatRoomMessageResponseDTO.builder()
+                .chatRoomId(chatRoomId)
+                .messages(chatMessages.map(ChatMessageDTO::new))
+                .build();
     }
 
     public void save(ChatMessageDTO chatMessageDTO) {
