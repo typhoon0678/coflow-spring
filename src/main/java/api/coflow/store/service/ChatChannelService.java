@@ -12,11 +12,9 @@ import api.coflow.store.dto.chat.ChatChannelResponseDTO;
 import api.coflow.store.entity.ChatChannel;
 import api.coflow.store.entity.ChatChannelMember;
 import api.coflow.store.entity.ChatRoom;
-import api.coflow.store.entity.ChatRoomMember;
 import api.coflow.store.entity.Member;
 import api.coflow.store.repository.ChatChannelMemberRepository;
 import api.coflow.store.repository.ChatChannelRepository;
-import api.coflow.store.repository.ChatRoomMemberRepository;
 import api.coflow.store.repository.ChatRoomRepository;
 import api.coflow.store.repository.MemberRepository;
 import jakarta.transaction.Transactional;
@@ -29,7 +27,6 @@ public class ChatChannelService {
     private final ChatChannelRepository chatChannelRepository;
     private final ChatChannelMemberRepository chatChannelMemberRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final MemberRepository memberRepository;
 
     public List<ChatChannelResponseDTO> getChannelList() {
@@ -69,14 +66,9 @@ public class ChatChannelService {
 
         ChatRoom defaultChatRoom = ChatRoom.builder()
                 .chatChannel(savedChatChannel)
-                .roomName("전체")
+                .roomName("기본 채팅방")
+                .isPublic(true)
                 .build();
         chatRoomRepository.save(defaultChatRoom);
-
-        ChatRoomMember chatRoomMember = ChatRoomMember.builder()
-                .chatRoom(defaultChatRoom)
-                .member(member)
-                .build();
-        chatRoomMemberRepository.save(chatRoomMember);
     }
 }

@@ -49,6 +49,7 @@ public class RefreshController {
         MemberInfoResponseDTO memberInfoResponseDTO = MemberInfoResponseDTO.builder()
                 .status(200)
                 .email(member.getEmail())
+                .username(member.getUsername())
                 .roles(member.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()))
                 .build();
 
@@ -86,6 +87,7 @@ public class RefreshController {
         memberInfoResponseDTO = MemberInfoResponseDTO.builder()
                 .status(200)
                 .email(tokenDTO.getEmail())
+                .username(tokenDTO.getUsername())
                 .roles(tokenDTO.getRoles())
                 .build();
 

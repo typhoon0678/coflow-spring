@@ -58,11 +58,13 @@ public class ChatMessageService {
     }
 
     public void save(ChatMessageDTO chatMessageDTO) {
+        Member member = memberRepository.findByEmail(chatMessageDTO.getEmail())
+                .orElseThrow(() -> new CustomException("MEMBER_EMAIL_NOT_FOUND"));
+
         ChatMessage chatMessage = ChatMessage.builder()
                 .id(chatMessageDTO.getId())
                 .chatRoom(ChatRoom.builder().id(chatMessageDTO.getChatRoomId()).build())
-                .email(chatMessageDTO.getEmail())
-                .username(chatMessageDTO.getUsername())
+                .member(member)
                 .message(chatMessageDTO.getMessage())
                 .createdAt(chatMessageDTO.getCreatedAt())
                 .updatedAt(chatMessageDTO.getCreatedAt())

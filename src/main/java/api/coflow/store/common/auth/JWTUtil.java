@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import api.coflow.store.common.enums.Role;
+import api.coflow.store.dto.member.MemberInfoDTO;
 import api.coflow.store.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -163,15 +164,14 @@ public class JWTUtil implements InitializingBean {
         return new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
     }
 
-    // jwt -> Member
-    public Member getMember(String jwt) {
+    // jwt -> MemberInfo
+    public MemberInfoDTO getMemberInfo(String jwt) {
         Claims claims = getClaims(jwt);
 
-        Set<Role> roles = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                .map(Role::valueOf)
+        Set<String> roles = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                 .collect(Collectors.toSet());
 
-        return Member.builder()
+        return MemberInfoDTO.builder()
                 .email(claims.getSubject())
                 .roles(roles)
                 .build();

@@ -7,9 +7,12 @@ import org.springframework.util.StringUtils;
 
 import api.coflow.store.common.auth.JWTUtil;
 import api.coflow.store.common.enums.Role;
+import api.coflow.store.common.exception.CustomException;
+import api.coflow.store.dto.member.MemberInfoDTO;
 import api.coflow.store.dto.refresh.TokenDTO;
 import api.coflow.store.entity.Member;
 import api.coflow.store.entity.Refresh;
+import api.coflow.store.repository.MemberRepository;
 import api.coflow.store.repository.RefreshRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.transaction.Transactional;
@@ -20,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class RefreshService {
 
     private final RefreshRepository refreshRepository;
+    private final MemberRepository memberRepository;
     private final JWTUtil jwtUtil;
 
     @Transactional
@@ -47,12 +51,15 @@ public class RefreshService {
     }
 
     public TokenDTO getNewToken(String refreshToken) {
-        Member member = jwtUtil.getMember(refreshToken);
+        MemberInfoDTO memberInfoDTO = jwtUtil.getMemberInfo(refreshToken);
+        Member member = memberRepository.findByEmail(memberInfoDTO.getEmail())
+                .orElseThrow(() -> new CustomException("MEMBER_EMAIL_NOT_FOUND"));
 
         String newAccessToken = jwtUtil.generateAccessToken(member);
 
         TokenDTO tokenDTO = TokenDTO.builder()
                 .email(member.getEmail())
+                .username(member.getUsername())
                 .roles(member.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()))
                 .accessToken(newAccessToken)
                 .build();

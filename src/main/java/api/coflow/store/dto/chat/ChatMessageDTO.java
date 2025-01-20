@@ -27,8 +27,8 @@ public class ChatMessageDTO {
         this.id = chatMessage.getId();
         this.chatChannelId = chatMessage.getChatRoom().getChatChannel().getId();
         this.chatRoomId = chatMessage.getChatRoom().getId();
-        this.email = chatMessage.getEmail();
-        this.username = chatMessage.getUsername();
+        this.email = chatMessage.getMember().getEmail();
+        this.username = chatMessage.getMember().getUsername();
         this.message = chatMessage.getMessage();
         this.createdAt = chatMessage.getCreatedAt();
     }

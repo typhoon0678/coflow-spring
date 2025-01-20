@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class TokenDTO {
     
     private String email;
+    private String username;
     private Set<String> roles;
     private String accessToken;
     private Cookie refreshTokenCookie;

@@ -33,11 +33,9 @@ public class ChatMessage {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    @Column(nullable = false)
-    private String email;
-    
-    @Column(nullable = false)
-    private String username;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Column(nullable = false)
     private String message;
