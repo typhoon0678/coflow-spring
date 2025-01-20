@@ -1,5 +1,6 @@
 package api.coflow.store.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ import api.coflow.store.entity.ChatChannelMember;
 import api.coflow.store.entity.Member;
 import api.coflow.store.repository.ChatChannelMemberRepository;
 import api.coflow.store.repository.MemberRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -23,16 +25,26 @@ public class ChatChannelMemberService {
     private final ChatChannelMemberRepository chatChannelMemberRepository;
     private final MemberRepository memberRepository;
 
-    public void invite(ChatChannelMemberRequestDTO chatChannelMemberRequestDTO) {
+    @Transactional
+    public List<ChatChannelMemberResponseDTO> invite(ChatChannelMemberRequestDTO chatChannelMemberRequestDTO) {
         checkAuthority();
 
-        Member inviteMember = memberRepository.findByEmail(chatChannelMemberRequestDTO.getEmail())
-                .orElseThrow(() -> new CustomException("CHAT_EMAIL_NOT_FOUND"));
-        ChatChannelMember chatChannelMember = ChatChannelMember.builder()
-                .chatChannel(ChatChannel.builder().id(chatChannelMemberRequestDTO.getChannelId()).build())
-                .member(inviteMember)
-                .build();
-        chatChannelMemberRepository.save(chatChannelMember);
+        ChatChannel chatChannel = ChatChannel.builder().id(chatChannelMemberRequestDTO.getChannelId()).build();
+        List<ChatChannelMemberResponseDTO> chatChannelMemberResponseDTOList = new ArrayList<>();
+
+        chatChannelMemberRequestDTO.getEmailList().stream()
+                .forEach((email) -> {
+                    Member inviteMember = memberRepository.findByEmail(email)
+                            .orElseThrow(() -> new CustomException("CHAT_EMAIL_NOT_FOUND"));
+                    ChatChannelMember chatChannelMember = ChatChannelMember.builder()
+                            .chatChannel(chatChannel)
+                            .member(inviteMember)
+                            .build();
+                    ChatChannelMember chatChannelInviteMember = chatChannelMemberRepository.save(chatChannelMember);
+                    chatChannelMemberResponseDTOList.add(new ChatChannelMemberResponseDTO(chatChannelInviteMember));
+                });
+
+        return chatChannelMemberResponseDTOList;
     }
 
     public List<ChatChannelMemberResponseDTO> getChannelMemberList(UUID channelId) {

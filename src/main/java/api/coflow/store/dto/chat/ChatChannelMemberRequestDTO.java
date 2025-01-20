@@ -1,5 +1,6 @@
 package api.coflow.store.dto.chat;
 
+import java.util.List;
 import java.util.UUID;
 
 import lombok.Data;
@@ -8,5 +9,5 @@ import lombok.Data;
 public class ChatChannelMemberRequestDTO {
     
     private UUID channelId;
-    private String email;
+    private List<String> emailList;
 }

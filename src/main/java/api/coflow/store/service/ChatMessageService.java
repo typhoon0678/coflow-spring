@@ -3,6 +3,7 @@ package api.coflow.store.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import api.coflow.store.common.exception.CustomException;
 import api.coflow.store.common.util.SecurityUtil;
 import api.coflow.store.dto.chat.ChatMessageDTO;
 import api.coflow.store.dto.chat.ChatRoomMessageResponseDTO;
+import api.coflow.store.entity.ChatChannel;
 import api.coflow.store.entity.ChatMessage;
 import api.coflow.store.entity.ChatRoom;
 import api.coflow.store.entity.Member;
@@ -33,8 +35,11 @@ public class ChatMessageService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException("MEMBER_EMAIL_NOT_FOUND"));
 
-        List<ChatRoom> chatRoomList = chatRoomRepository
-                .getChatRoomByChatChannelId(channelId, member.getId());
+        ChatChannel chatChannel = ChatChannel.builder().id(channelId).build();
+
+        List<ChatRoom> publicChatRoomList = chatRoomRepository.findAllByChatChannelAndIsPublic(chatChannel, true);
+        List<ChatRoom> privateChatRoomList = chatRoomRepository.getChatRoomByChatChannelAndMember(chatChannel, member);
+        List<ChatRoom> chatRoomList = Stream.concat(publicChatRoomList.stream(), privateChatRoomList.stream()).toList();
 
         return chatRoomList.stream()
                 .map((chatRoom) -> ChatRoomMessageResponseDTO.builder()

@@ -68,7 +68,7 @@ public class RefreshController {
             HttpServletResponse response) {
         MemberInfoResponseDTO memberInfoResponseDTO;
 
-        if (!refreshService.isValid(refreshToken)) {
+        if (!StringUtils.hasText(refreshToken) || !refreshService.isValid(refreshToken)) {
             memberInfoResponseDTO = MemberInfoResponseDTO.builder()
                     .status(401)
                     .build();
