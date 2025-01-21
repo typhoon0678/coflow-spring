@@ -13,7 +13,7 @@ public class ChattingConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // 연결될 엔드포인트
-        registry.addEndpoint("/ws")
+        registry.addEndpoint("/chat")
                 .setAllowedOrigins("*");
     }
 
