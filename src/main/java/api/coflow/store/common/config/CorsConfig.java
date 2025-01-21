@@ -27,7 +27,7 @@ public class CorsConfig {
         config.addExposedHeader("Authorization");
 
         source.registerCorsConfiguration("/api/**", config);
-        source.registerCorsConfiguration("/ws/**", config);
+        source.registerCorsConfiguration("/chat/**", config);
         
         return new CorsFilter(source);
     }
