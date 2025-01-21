@@ -1,5 +1,7 @@
 package api.coflow.store.common.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +13,7 @@ import org.springframework.web.filter.CorsFilter;
 public class CorsConfig {
 
     @Value("${client.url}")
-    String clientUrl;
+    List<String> clientUrl;
 
     @Bean
     public CorsFilter corsFilter() {
@@ -19,7 +21,7 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern(clientUrl);
+        config.setAllowedOrigins(clientUrl);
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.addExposedHeader("Authorization");
