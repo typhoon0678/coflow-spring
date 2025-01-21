@@ -102,7 +102,7 @@ public class JWTUtil implements InitializingBean {
                 .domain(domain)
                 .path("/")
                 .httpOnly(true)
-                // .secure(true)
+                .secure(true)
                 .maxAge(maxAge)
                 .build();
     }
